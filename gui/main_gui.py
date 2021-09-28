@@ -8,6 +8,7 @@ import sys
 
 import matplotlib
 import matplotlib.pyplot as plt
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt, QRect
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, \
@@ -20,7 +21,8 @@ class MainWindow(QMainWindow):
         self.main_widget = MainWidget()
         self.setWindowTitle("KEYSIGHT   E5080B")
         self.resize(1370, 872)
-
+        with open('../QSS/origin.qss', 'r', encoding='utf-8') as f:
+            self.setStyleSheet(f.read())
         self._setupUI()
 
     def _setupUI(self):
@@ -67,7 +69,7 @@ class PlotSetting(QWidget):
     def _setupUI(self):
         # 参数选择列表
         self.measure_list = ['S11', 'S21', 'S12', 'S22']
-        self.format_list = ['MLINear', 'MLOGarithmic', 'PHASe', 'POLar', 'SMITh', 'SWR', 'REAL', 'IMAGinary', 'GDELay',
+        self.format_list = ['MLOGarithmic', 'MLINear', 'PHASe', 'POLar', 'SMITh', 'SWR', 'REAL', 'IMAGinary', 'GDELay',
                             'UPHase', 'PPHase']
         # 整体采用垂直布局
         self.vl_plot_setting = QVBoxLayout(self)
@@ -251,7 +253,7 @@ class GlobalSetting(QWidget):
         self.gl_global_setting.setVerticalSpacing(20)
 
         self.lb_blank = QLabel('')
-        self.unit_list = ['Hz', 'KHz', 'MHz', 'GHz']
+        self.unit_list = ['KHz', 'MHz', 'GHz']
         self.lb_start = QLabel("起始频率：")
         self.le_start = QLineEdit()
         self.cb_start_unit = QComboBox()
@@ -296,11 +298,13 @@ class PlotArea(QWidget):
 
     def __init__(self):
         super(PlotArea, self).__init__()
+        self.setContentsMargins(0, 0, 0, 0)
         self.ax = []
         self._setupUI()
 
     def _setupUI(self):
         self.figure = plt.figure()
+        self.figure.subplots_adjust(wspace=0.3, hspace=0.3, top=0.95, right=0.95, left=0.1)  # 调整子图间距
         self.canvas = FigureCanvas(self.figure)
 
         self.ax_list = [self._create_ax(221), self._create_ax(222), self._create_ax(223), self._create_ax(224)]
@@ -311,7 +315,6 @@ class PlotArea(QWidget):
     def _create_ax(self, position):
         def inner():
             self.ax = self.figure.add_subplot(position)
-
             return self.ax
 
         return inner

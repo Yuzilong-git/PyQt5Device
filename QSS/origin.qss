@@ -1,0 +1,18 @@
+QWidget
+{
+    background-color: #FFFAFA;
+}
+
+QLabel
+{
+    font-size: 14px;
+}
+QComboBox
+{
+    font-size: 14px;
+}
+QPushButton
+{
+    font-size: 14px;
+}
+
