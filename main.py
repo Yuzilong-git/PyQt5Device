@@ -5,11 +5,12 @@
 @Author  : Coco
 """
 import sys
+from driver.main_driver import MainAction
 
 from PyQt5.QtWidgets import QApplication
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # window = None
-    # window.show()
+    window = MainAction()
+    window.show()
     sys.exit(app.exec_())
