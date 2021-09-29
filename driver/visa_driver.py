@@ -25,6 +25,7 @@ class Device:
     def set_external_mode(self):
         self.inst.write('TRIG:SOUR EXT')
 
+    # 切换内部模式
     def set_internal_mode(self):
         self.inst.write("TRIG:SOUR IMM")
 

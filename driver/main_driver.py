@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from PyQt5.QtWidgets import QMessageBox, QApplication, QPushButton, QComboBox
+from PyQt5.QtWidgets import QMessageBox, QApplication, QPushButton, QComboBox, QTableWidgetItem
 
 from gui.main_gui import MainWindow
 from driver.visa_driver import Device
@@ -19,8 +19,8 @@ class MainAction(MainWindow):
         super(MainAction, self).__init__()
         self._bind_actions()
         self.table = self.main_widget.table_area
-        self.device = Device()
-        self.device.set_external_mode()
+        # self.device = Device()
+        # self.device.set_external_mode()
         self._init()
         self.win_list = [1, 2, 3, 4]
         self.format_list = ['MLOGarithmic', 'MLINear', 'PHASe', 'POLar']
@@ -45,12 +45,36 @@ class MainAction(MainWindow):
         for win_num in self.win_list:
             win_data_dict[win_num] = self.device.get_y_data(win_num)
 
+        # 绘图部分
         for win_num in self.win_list:
             cb_format = self.findChild(QComboBox, 'cb_format_' + str(win_num))
             if cb_format.currentIndex() != 3 and cb_format.currentIndex() != 4:
                 print('X >>>>>>>>>>>>>>\n', win_data_dict[0], "\n\n", "y>>>>>>>>>>>>>>>>\n", win_data_dict[win_num])
                 self.main_widget.plot_area.ax_list[win_num - 1]().plot(win_data_dict[0], win_data_dict[win_num])
         self.main_widget.plot_area.canvas.draw()
+
+        # 表格部分
+        print(self.header)
+        # 统一修改表格的部分
+        for i in range(len(win_data_dict[0])):
+            for j in range(len(win_data_dict)):
+                self.new_item[j] = QTableWidgetItem(f"{win_data_dict[j][i]}")
+                self.table.setItem(i, j, self.new_item[j])
+        # 如果有极坐标或者史密斯图的话另外处理
+        if 'POLar' in self.header or 'SMITh' in self.header:
+            # 获取有问题的列
+            polar_index = self.header.index('POLar')
+            smith_index = self.header.index('SMITh')
+            if polar_index > 0:
+                print(polar_index)
+                for i in range(len(win_data_dict[0]), len(win_data_dict[0]) * 2):
+                    self.new_item[i] = QTableWidgetItem(f"{win_data_dict[polar_index][i]}")
+                    self.table.setItem(i, polar_index, self.new_item[i])
+            if smith_index > 0:
+                print(smith_index)
+                for i in range(len(win_data_dict[0]), len(win_data_dict[0]) * 2):
+                    self.new_item[i] = QTableWidgetItem(f"{win_data_dict[polar_index][i]}")
+                    self.table.setItem(i, smith_index, self.new_item[i])
 
     def _save_local_setting(self):
         self.widget = self.main_widget.plot_setting
@@ -93,24 +117,24 @@ class MainAction(MainWindow):
         # 绘图部分
         plt.clf()
         self.main_widget.plot_area.canvas.draw()
-        header = ["frequency"]
+        self.header = ["frequency"]
         for i in self.win_list:
             ax = self.main_widget.plot_area.ax_list[i - 1]()
             ax.set_xlabel("FREQ")
             ax.set_ylabel(self.main_widget.plot_setting.format_list[
                               self.findChild(QComboBox, 'cb_format_' + str(i)).currentIndex()])
-            header.append(self.main_widget.plot_setting.format_list[
-                              self.findChild(QComboBox, 'cb_format_' + str(i)).currentIndex()])
+            self.header.append(self.main_widget.plot_setting.format_list[
+                                   self.findChild(QComboBox, 'cb_format_' + str(i)).currentIndex()])
         self.main_widget.plot_area.canvas.draw()
 
         # 表格部分
         self.table.tb_content.setColumnCount(len(self.win_list) + 1)
-        self.table.tb_content.setHorizontalHeaderLabels(header)
+        self.table.tb_content.setHorizontalHeaderLabels(self.header)
 
     def _disable(self):
         # 找到所点的window序号
         sender = self.sender()
-        # 数字 1 - 4
+        # 获取所点击window的序号：数字 1 - 4
         self.select_window_num = sender.objectName()[-1]
         cb_measure = self.findChild(QComboBox, 'cb_measure_' + self.select_window_num)
         cb_format = self.findChild(QComboBox, 'cb_format_' + self.select_window_num)
@@ -165,11 +189,11 @@ class MainAction(MainWindow):
         self.table.tb_content.setHorizontalHeaderLabels(header)
 
         # 设备初始化
-        self.device.set_external_mode()
-        self.device.preset()
-        self.device.create_window(2, 'MLINear')
-        self.device.create_window(3, 'PHASe')
-        self.device.create_window(4, 'POLar')
+        # self.device.set_external_mode()
+        # self.device.preset()
+        # self.device.create_window(2, 'MLINear')
+        # self.device.create_window(3, 'PHASe')
+        # self.device.create_window(4, 'POLar')
         # self.device.set_external_mode()
 
     def _data_processing(self):

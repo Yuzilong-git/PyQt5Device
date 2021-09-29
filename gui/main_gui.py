@@ -9,7 +9,7 @@ import sys
 import matplotlib
 import matplotlib.pyplot as plt
 from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtCore import Qt, QRect, QSize
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QPushButton, QLineEdit, QHBoxLayout, QVBoxLayout, \
     QGridLayout, QMainWindow, QComboBox, QHeaderView, QTableWidget, QAbstractItemView, QFormLayout, QFrame, QSplitter
@@ -249,7 +249,7 @@ class GlobalSetting(QWidget):
         frame.setFrameShape(QFrame.Panel)
 
         self.gl_global_setting = QGridLayout(frame)
-        self.gl_global_setting.setHorizontalSpacing(30)
+        self.gl_global_setting.setHorizontalSpacing(20)
         self.gl_global_setting.setVerticalSpacing(20)
 
         self.lb_blank = QLabel('')
@@ -289,7 +289,11 @@ class GlobalSetting(QWidget):
         self.gl_global_setting.addWidget(self.pb_save_global_setting, 4, 2)
         self.gl_global_setting.addWidget(self.pb_plot, 5, 2)
         self.gl_global_setting.addWidget(self.pb_clear, 5, 1)
+        # self.gl_global_setting.addWidget(self.lb_blank, 6, 0)
         self.gl_global_setting.addWidget(self.lb_blank, 6, 4)
+        self.gl_global_setting.setColumnStretch(0, 0)
+        self.gl_global_setting.setColumnStretch(1, 1)
+        self.gl_global_setting.setColumnStretch(2, 1)
         self.vl_global_setting.addWidget(frame)
 
 
